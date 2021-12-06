@@ -1,0 +1,12 @@
+440 60
+780 -225
+670 -530
+1690 -2129 village
+2267 -2688 village 2...
+2084 -3730 underwater nether portal
+1777 -4392 village 3...
+1117 -2428 village 4
+1413 -4377 nether portal 2
+1207 -3433 swamp
+1028 -1274 snow dome 2
+790 -857 练习用的浇筑地狱门（未点燃）
