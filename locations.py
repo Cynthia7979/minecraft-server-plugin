@@ -31,8 +31,15 @@ def main():
 
 def update_player_ids(world, cmd_players: dict):
     conn = world.conn
-    player_ids = world.getPlayerEntityIds()
+    try:
+        player_ids = world.getPlayerEntityIds()
+    except ValueError:  # No players
+        return {}
     for plrID in player_ids:
         if plrID not in cmd_players.keys():
             cmd_players[plrID] = CmdPlayer(conn, plrID)
     return cmd_players
+
+
+if __name__ == '__main__':
+    main()
