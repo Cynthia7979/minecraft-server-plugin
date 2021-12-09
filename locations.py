@@ -1,31 +1,43 @@
-import mcpython
+import json
 from mcpython.minecraft import Minecraft, CmdPlayer
 from time import sleep
+
+JSON_DATABSE_PATH = './book_of_locations.json'
 
 
 def main():
     mc = Minecraft.create()
     conn = mc.conn
+    database = json.load(open(JSON_DATABSE_PATH))
     print('Running!')
     mc.postToChat('')
-    mc.postToChat('§9§k1322§r§9 locations.py is up and running. Type ?location to query the Book of Locations!§k1322§r')
+    mc.postToChat('§9§k12§r§9 locations.py is up and running. Type ?location to query the Book of Locations!§k22§r')
     mc.postToChat('')
 
     cmd_players = update_player_ids(mc, {})
 
-    while True:
+    while True:  # Main loop
         # Update player entity IDs to fetch corresponding chatEvents
         cmd_players = update_player_ids(mc, cmd_players)
-        chat_per_player = [plr.pollChatPosts() for plr in cmd_players.values()]  # Fetch chat for each player
-        chat_events = [e for chat_list in chat_per_player for e in chat_list]  # Flatten out list
-        if chat_events: print(chat_events)
-        for chat_event in chat_events:
-            if chat_event.message == '?location':
-                mc.postToChat('')
-                mc.postToChat("§9>> Book Of Locations <<§9")
-                for line in open('./book_of_locations.txt', encoding='utf-8').readlines():
-                    mc.postToChat("    "+line)
-                mc.postToChat('')
+
+        # Handle chat messages
+        for plr_id, cmd_plr in cmd_players.items():
+            chat_events = cmd_plr.pollChatPosts()
+            if chat_events: print(chat_events)
+            for chat_event in chat_events:
+                msg = chat_event.message
+                if msg == '?location':
+                    send_book_of_locations(mc, database)
+                elif msg == '?save':
+                    save_player_pos(mc, cmd_plr, database)
+                elif msg.startswith('?saveAs'):
+                    args = msg.split()
+                    if len(args) > 1:
+                        save_player_pos_as(mc, cmd_plr, ' '.join(args[1:]), database)
+                    else:
+                        mc.postToChat('§9You did not specify a pos type. The current pos types are:')
+                        for pos_type in database.keys():
+                            mc.postToChat(f'  {pos_type}')
         sleep(2)
 
 
@@ -39,6 +51,30 @@ def update_player_ids(world, cmd_players: dict):
         if plrID not in cmd_players.keys():
             cmd_players[plrID] = CmdPlayer(conn, plrID)
     return cmd_players
+
+
+def send_book_of_locations(world, json_):
+    world.postToChat('§r')
+    world.postToChat("§9>> Book Of Locations <<§r")
+    for pos_type, pos_data in json_.items():
+        world.postToChat(f"  §f{pos_type.capitalize()}")
+        for line in pos_data:
+            world.postToChat(f"    §7{line}")
+    world.postToChat('§r')
+
+
+def save_player_pos(world, cmd_player, json_):
+    world.postToChat('§7Saving as "default" position. To specify position, call §f?saveAs <type>')
+    save_player_pos_as(world, cmd_player, 'default', json_)
+
+
+def save_player_pos_as(world, cmd_player, pos_type, json_):
+    player_pos_x, player_pos_y, player_pos_z = cmd_player.getEntities()[0][-3:]
+    if pos_type in json_.keys():
+        json_[pos_type].append(f'{player_pos_x} {player_pos_z}')
+        json.dump(json_, open(JSON_DATABSE_PATH, 'w'))
+    world.postToChat(f'§9Successfully saved ({player_pos_x}, {player_pos_z}) as {pos_type}.')
+    world.postToChat('§r')
 
 
 if __name__ == '__main__':
