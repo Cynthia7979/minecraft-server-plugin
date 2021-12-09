@@ -26,18 +26,22 @@ def main():
             if chat_events: print(chat_events)
             for chat_event in chat_events:
                 msg = chat_event.message
-                if msg == '?location':
+                args = msg.split()
+                if args[0] == '?location':
                     send_book_of_locations(mc, database)
-                elif msg == '?save':
+                elif args[0] == '?save':
                     save_player_pos(mc, cmd_plr, database)
-                elif msg.startswith('?saveAs'):
-                    args = msg.split()
+                elif args[0] == '?saveAs':
                     if len(args) > 1:
                         save_player_pos_as(mc, cmd_plr, ' '.join(args[1:]), database)
                     else:
                         mc.postToChat('§9You did not specify a pos type. The current pos types are:')
                         for pos_type in database.keys():
                             mc.postToChat(f'  {pos_type}')
+                elif args[0] == '?saveas':
+                    mc.postToChat('§7Do you mean §f?saveAs §7?')
+                elif msg.startswith('?'):
+                    mc.postToChat(f'§7<locations.py> Command "{args[0]}" not found.')
         sleep(2)
 
 
