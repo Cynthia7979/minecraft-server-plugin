@@ -1,31 +1,32 @@
 {
-  "default":
-  [
-    "440 60",
-    "780 -225",
-    "670 -530"
-  ],
-  "village":
-  [
-    "1690 -2129",
-    "2267 -2688",
-    "1777 -4392",
-    "1786 -2857 | Spruce",
-    "1169 -2446 | Didn't finish looting | Spruce"
-  ],
-  "nether portal":
-          [
-            "970 -2444",
-            "790 -857 | Speedbuilt",
-            "1413 -4377",
-            "2084 -3730 | Underwater | No loot"
-          ],
-  "ocean monument":
-          [
-            "1748 1957"
-          ],
-  "biome":
-          [
-            "1207 -3433 | Swamp"
-          ]
+    "spawn": [
+        "124 -295",
+        "123 -293"
+    ],
+    "default": [
+        "440 60",
+        "780 -225",
+        "670 -530",
+        "123 -293",
+        "123 -293"
+    ],
+    "village": [
+        "1690 -2129",
+        "2267 -2688",
+        "1777 -4392",
+        "1786 -2857 | Spruce",
+        "1169 -2446 | Didn't finish looting | Spruce"
+    ],
+    "nether portal": [
+        "970 -2444",
+        "790 -857 | Speedbuilt",
+        "1413 -4377",
+        "2084 -3730 | Underwater | No loot"
+    ],
+    "ocean monument": [
+        "1748 1957"
+    ],
+    "biome": [
+        "1207 -3433 | Swamp"
+    ]
 }
