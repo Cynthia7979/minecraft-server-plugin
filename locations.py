@@ -37,11 +37,17 @@ def main():
                             save_player_pos_as(mc, cmd_plr, ' '.join(args[1:]), database)
                         else:
                             mc.postToChat('§9You did not specify a pos type. The current pos types are:')
-                            for pos_type in database.keys():
-                                mc.postToChat(f'§7  {pos_type}')
-                            mc.postToChat('§r')
+                            show_pos_types(mc, database)
                     elif args[0] == '?saveas':
                         mc.postToChat('§7Do you mean §f?saveAs §7?')
+                    elif args[0] == '?query':
+                        try:
+                            pos_type = args[1]
+                            assert pos_type in database.keys(), IndexError
+                            send_typed_locations(mc, pos_type, database)
+                        except IndexError:
+                            mc.postToChat('§9Please provide a valid pos type. Current pos types are:§9')
+                            show_pos_types(mc, database)
                     elif msg.startswith('?'):
                         mc.postToChat(f'§7<locations.py> Command "{args[0]}" not found.')
             sleep(2)
@@ -82,6 +88,19 @@ def save_player_pos_as(world, cmd_player, pos_type, json_):
         json_[pos_type].append(f'{int(player_pos_x)} {int(player_pos_z)}')
         json.dump(json_, open(JSON_DATABSE_PATH, 'w'), indent='    ')
     world.postToChat(f'§9Successfully saved ({int(player_pos_x)} {int(player_pos_z)}) as {pos_type}.')
+    world.postToChat('§r')
+
+
+def show_pos_types(world, json_):
+    for pos_type in json_.keys():
+        world.postToChat(f'§7  {pos_type}')
+    world.postToChat('§r')
+
+
+def send_typed_locations(world, pos_type, json_):
+    world.postToChat(f'§f{pos_type}')
+    for line in json_[pos_type]:
+        world.postToChat(f'  §7{line}')
     world.postToChat('§r')
 
 
