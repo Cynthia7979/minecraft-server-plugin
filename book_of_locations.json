@@ -28,5 +28,15 @@
     ],
     "biome": [
         "1207 -3433 | Swamp"
+    ],
+    "bastion": [
+        "285 253"
+    ],
+    "fortress": [
+        "172 392"
+    ],
+    "portal nether coords": [
+        "17 -51",
+        "403 24 | Fixed from ruins"
     ]
 }

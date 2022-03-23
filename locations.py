@@ -9,7 +9,6 @@ def main():
     mc = Minecraft.create()
     try:
         conn = mc.conn
-        database = json.load(open(JSON_DATABSE_PATH))
         print('Running!')
         mc.postToChat('')
         mc.postToChat('§9§k12§r§9 locations.py is up and running. Type §f?location §9to query the Book of Locations! §k22§r')
@@ -18,6 +17,8 @@ def main():
         cmd_players = update_player_ids(mc, {})
 
         while True:  # Main loop
+            database = json.load(open(JSON_DATABSE_PATH))
+
             # Update player entity IDs to fetch corresponding chatEvents
             cmd_players = update_player_ids(mc, cmd_players)
 
@@ -48,11 +49,22 @@ def main():
                         except IndexError:
                             mc.postToChat('§9Please provide a valid pos type. Current pos types are:§9')
                             show_pos_types(mc, database)
+                    elif args[0] == '?help':
+                        mc.postToChat('§9Available commands:')
+                        mc.postToChat('§f?location - §7Show all saved locations')
+                        mc.postToChat('§f?save - §7Save current player location as type default')
+                        mc.postToChat('§f?saveAs <type> - §7Save current player location as the specified type')
+                        mc.postToChat('§f?query <type> - §7Show all locations in the specified type')
+                        mc.postToChat('§f?help - §7Show this manual§r')
                     elif msg.startswith('?'):
                         mc.postToChat(f'§7<locations.py> Command "{args[0]}" not found.')
-            sleep(2)
-    except:
+            if len(cmd_players) == 0:
+                sleep(10)  # Don't know why but maybe this could enhance performance?
+            else:
+                sleep(2)
+    except Exception as e:
         mc.postToChat('§4<locations.py> An error occurred. The program is stopped.')
+        assert 1 == 0, e
 
 
 def update_player_ids(world, cmd_players: dict):
@@ -83,7 +95,8 @@ def save_player_pos(world, cmd_player, json_):
 
 
 def save_player_pos_as(world, cmd_player, pos_type, json_):
-    player_pos_x, player_pos_y, player_pos_z = cmd_player.getEntities()[0][-3:]
+    print(cmd_player.getEntities())
+    player_pos_x, player_pos_y, player_pos_z = cmd_player.getPos()
     if pos_type in json_.keys():
         json_[pos_type].append(f'{int(player_pos_x)} {int(player_pos_z)}')
         json.dump(json_, open(JSON_DATABSE_PATH, 'w'), indent='    ')
