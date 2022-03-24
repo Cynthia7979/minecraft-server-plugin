@@ -95,7 +95,6 @@ def save_player_pos(world, cmd_player, json_):
 
 
 def save_player_pos_as(world, cmd_player, pos_type, json_):
-    print(cmd_player.getEntities())
     player_pos_x, player_pos_y, player_pos_z = cmd_player.getPos()
     if pos_type in json_.keys():
         json_[pos_type].append(f'{int(player_pos_x)} {int(player_pos_z)}')
