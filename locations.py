@@ -24,10 +24,19 @@ def main():
 
             # Handle chat messages
             for plr_id, cmd_plr in cmd_players.items():
-                chat_events = cmd_plr.pollChatPosts()
+                try:
+                    chat_events = cmd_plr.pollChatPosts()
+                except Exception as e:  # Check the exception type later
+                    # This message contains GBK encoding
+                    print(e)
+                    continue
                 if chat_events: print(chat_events)
                 for chat_event in chat_events:
-                    msg = chat_event.message
+                    try:
+                        msg = chat_event.message
+                    except AttributeError:
+                        # This message isn't a player sent chat (don't know how's that possible but it happens)
+                        continue
                     args = msg.split()
                     if args[0] == '?location':
                         send_book_of_locations(mc, database)
@@ -42,13 +51,12 @@ def main():
                     elif args[0] == '?saveas':
                         mc.postToChat('§7Do you mean §f?saveAs §7?')
                     elif args[0] == '?query':
-                        try:
-                            pos_type = args[1]
-                            assert pos_type in database.keys(), IndexError
-                            send_typed_locations(mc, pos_type, database)
-                        except IndexError:
+                        pos_type = ' '.join(args[1:])
+                        if pos_type not in database.keys():
                             mc.postToChat('§9Please provide a valid pos type. Current pos types are:§9')
                             show_pos_types(mc, database)
+                        else:
+                            send_typed_locations(mc, pos_type, database)
                     elif args[0] == '?help':
                         mc.postToChat('§9Available commands:')
                         mc.postToChat('§f?location - §7Show all saved locations')
@@ -96,9 +104,13 @@ def save_player_pos(world, cmd_player, json_):
 
 def save_player_pos_as(world, cmd_player, pos_type, json_):
     player_pos_x, player_pos_y, player_pos_z = cmd_player.getPos()
+    pos_string = f'{int(player_pos_x)} {int(player_pos_z)}'
     if pos_type in json_.keys():
-        json_[pos_type].append(f'{int(player_pos_x)} {int(player_pos_z)}')
-        json.dump(json_, open(JSON_DATABSE_PATH, 'w'), indent='    ')
+        json_[pos_type.lower()].append(pos_string)
+    else:
+        json_[pos_type.lower()] = [pos_string]
+        world.postToChat(f'§6Created new location type {pos_type}.')
+    json.dump(json_, open(JSON_DATABSE_PATH, 'w'), indent='    ')
     world.postToChat(f'§9Successfully saved ({int(player_pos_x)} {int(player_pos_z)}) as {pos_type}.')
     world.postToChat('§r')
 
